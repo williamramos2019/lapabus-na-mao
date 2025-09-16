@@ -2,13 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
-*/
+/* Design system para o app de ônibus de São José da Lapa */
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
+    /* Cores principais do transporte público */
+    --background: 248 250 252; /* slate-50 */
     --foreground: 222.2 84% 4.9%;
 
     --card: 0 0% 100%;
@@ -17,16 +16,21 @@ All colors MUST be HSL.
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
 
-    --primary: 222.2 47.4% 11.2%;
+    /* Azul transporte como cor principal */
+    --primary: 223 84% 55%; /* blue-600 */
     --primary-foreground: 210 40% 98%;
+    --primary-light: 224 76% 60%; /* blue-500 */
+    --primary-glow: 224 100% 67%; /* blue-400 */
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    /* Verde transporte como secundária */
+    --secondary: 142 76% 36%; /* green-600 */
+    --secondary-foreground: 210 40% 98%;
+    --secondary-light: 142 71% 45%; /* green-500 */
 
     --muted: 210 40% 96.1%;
     --muted-foreground: 215.4 16.3% 46.9%;
 
-    --accent: 210 40% 96.1%;
+    --accent: 224 100% 67%; /* blue-400 */
     --accent-foreground: 222.2 47.4% 11.2%;
 
     --destructive: 0 84.2% 60.2%;
@@ -34,10 +38,26 @@ All colors MUST be HSL.
 
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --ring: 223 84% 55%;
+
+    /* Gradientes para o app */
+    --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-light)));
+    --gradient-secondary: linear-gradient(135deg, hsl(var(--secondary)), hsl(var(--secondary-light)));
+    --gradient-hero: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--secondary)) 100%);
+    --gradient-card: linear-gradient(145deg, hsl(0 0% 100% / 0.9), hsl(0 0% 98% / 0.7));
+
+    /* Sombras elegantes */
+    --shadow-bus: 0 4px 20px hsl(var(--primary) / 0.1);
+    --shadow-elevated: 0 10px 30px -5px hsl(var(--primary) / 0.2);
+    --shadow-glow: 0 0 30px hsl(var(--accent) / 0.3);
+
+    /* Animações */
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-bounce: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
 
     --radius: 0.5rem;
 
+    /* Específico para o tema escuro */
     --sidebar-background: 0 0% 98%;
 
     --sidebar-foreground: 240 5.3% 26.1%;
