@@ -1,9 +1,10 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Bus, Search, MapPin, Clock } from 'lucide-react';
+import { Bus, Search, MapPin, Clock, Zap } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { BusLineCard } from '@/components/BusLineCard';
+import { TransportIntegration } from '@/components/TransportIntegration';
 import { busLines } from '@/data/busLines';
 import busHeroImage from '@/assets/bus-hero.jpg';
 
@@ -92,6 +93,11 @@ const Index = () => {
               <div className="text-muted-foreground">Horário de Funcionamento</div>
             </CardContent>
           </Card>
+        </div>
+
+        {/* Transport Integration */}
+        <div className="mb-8">
+          <TransportIntegration />
         </div>
 
         {/* Bus Lines */}
