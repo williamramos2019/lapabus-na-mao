@@ -2,21 +2,36 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Bus, Search, MapPin, Clock, Zap } from 'lucide-react';
 import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { BusLineCard } from '@/components/BusLineCard';
+import { CategoryFilter } from '@/components/CategoryFilter';
 import { TransportIntegration } from '@/components/TransportIntegration';
 import { busLines } from '@/data/busLines';
+import { busCategories } from '@/types/categories';
 import busHeroImage from '@/assets/bus-hero.jpg';
 
 const Index = () => {
   const [searchQuery, setSearchQuery] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const navigate = useNavigate();
 
-  const filteredLines = busLines.filter(line =>
-    line.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    line.number.includes(searchQuery) ||
-    line.route.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  // Filtrar linhas baseado na pesquisa e categoria
+  const filteredLines = busLines.filter(line => {
+    const matchesSearch = line.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                         line.number.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                         line.route.toLowerCase().includes(searchQuery.toLowerCase());
+    
+    const matchesCategory = selectedCategory === null || line.category === selectedCategory;
+    
+    return matchesSearch && matchesCategory;
+  });
+
+  // Calcular contadores de categoria
+  const categoryCounts = busLines.reduce((counts, line) => {
+    const category = line.category || 'outras';
+    counts[category] = (counts[category] || 0) + 1;
+    return counts;
+  }, {} as Record<string, number>);
 
   const handleLineClick = (lineId: string) => {
     navigate(`/linha/${lineId}`);
@@ -100,36 +115,68 @@ const Index = () => {
           <TransportIntegration />
         </div>
 
-        {/* Bus Lines */}
-        <div className="mb-6">
-          <h2 className="text-2xl font-bold mb-4 text-foreground">
-            {filteredLines.length === busLines.length 
-              ? 'Todas as Linhas' 
-              : `${filteredLines.length} linha(s) encontrada(s)`}
-          </h2>
-        </div>
+        {/* Filtros e Linhas */}
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+          {/* Sidebar com Filtros */}
+          <div className="lg:col-span-1">
+            <Card>
+              <CardHeader>
+                <CardTitle>Filtros</CardTitle>
+                <CardDescription>
+                  Encontre linhas por categoria
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <CategoryFilter
+                  selectedCategory={selectedCategory}
+                  onCategoryChange={setSelectedCategory}
+                  categoryCounts={categoryCounts}
+                />
+              </CardContent>
+            </Card>
+          </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredLines.map((busLine) => (
-            <BusLineCard
-              key={busLine.id}
-              busLine={busLine}
-              onClick={() => handleLineClick(busLine.id)}
-            />
-          ))}
-        </div>
+          {/* Lista de Linhas */}
+          <div className="lg:col-span-3">
+            <Card className="mb-6">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Search className="w-5 h-5" />
+                  {filteredLines.length} {filteredLines.length === 1 ? 'linha encontrada' : 'linhas encontradas'}
+                  {selectedCategory && (
+                    <span className="text-sm font-normal text-muted-foreground">
+                      em {busCategories.find(cat => cat.id === selectedCategory)?.name}
+                    </span>
+                  )}
+                </CardTitle>
+              </CardHeader>
+            </Card>
 
-        {filteredLines.length === 0 && searchQuery && (
-          <Card className="text-center py-12">
-            <CardContent>
-              <Bus className="w-16 h-16 mx-auto mb-4 text-muted-foreground" />
-              <h3 className="text-lg font-semibold mb-2">Nenhuma linha encontrada</h3>
-              <p className="text-muted-foreground">
-                Tente buscar por outro termo ou verifique a ortografia.
-              </p>
-            </CardContent>
-          </Card>
-        )}
+            {filteredLines.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {filteredLines.map((line) => (
+                  <BusLineCard
+                    key={line.id}
+                    busLine={line}
+                    onClick={() => handleLineClick(line.id)}
+                  />
+                ))}
+              </div>
+            ) : (
+              <Card>
+                <CardContent className="flex flex-col items-center justify-center py-16">
+                  <Search className="w-12 h-12 text-muted-foreground mb-4" />
+                  <p className="text-xl font-semibold text-muted-foreground mb-2">
+                    Nenhuma linha encontrada
+                  </p>
+                  <p className="text-muted-foreground text-center">
+                    Tente ajustar sua pesquisa ou selecionar uma categoria diferente
+                  </p>
+                </CardContent>
+              </Card>
+            )}
+          </div>
+        </div>
       </div>
     </div>
   );

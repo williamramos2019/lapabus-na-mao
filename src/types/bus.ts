@@ -11,6 +11,7 @@ export interface BusLine {
   saturdaySchedule: string[];
   sundaySchedule: string[];
   stops: BusStop[];
+  category?: string;
 }
 
 export interface BusStop {
