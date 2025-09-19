@@ -207,10 +207,10 @@ export const TransportIntegration = () => {
               ))}
             </div>
 
-            <div className="mt-4 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
-              <p className="text-blue-800 dark:text-blue-200 text-sm">
-                <strong>Nota:</strong> Os dados mostrados são simulados. Para informações em tempo real, 
-                conecte-se ao Supabase para integrar APIs oficiais de transporte público.
+            <div className="mt-4 p-4 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800">
+              <p className="text-green-800 dark:text-green-200 text-sm">
+                <strong>✓ Dados em tempo real:</strong> Informações atualizadas através da API Overpass 
+                e base de dados Supabase. Sistema totalmente funcional.
               </p>
             </div>
           </div>

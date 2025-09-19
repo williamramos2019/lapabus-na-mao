@@ -1,5 +1,4 @@
 import { BusLine } from '@/types/bus';
-import { parseRealBusData } from '@/utils/busDataParser';
 
-// Dados reais do transporte metropolitano de Minas Gerais
-export const busLines: BusLine[] = parseRealBusData();
+// This file now serves as a fallback only - all real data comes from Supabase
+export const busLines: BusLine[] = [];

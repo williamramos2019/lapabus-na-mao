@@ -1,12 +1,12 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Bus, Search, MapPin, Clock, Zap } from 'lucide-react';
+import { Bus, Search, MapPin, Clock, Zap, Loader2 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { BusLineCard } from '@/components/BusLineCard';
 import { CategoryFilter } from '@/components/CategoryFilter';
 import { TransportIntegration } from '@/components/TransportIntegration';
-import { busLines } from '@/data/busLines';
+import { useBusData } from '@/hooks/useBusData';
 import { busCategories } from '@/types/categories';
 import busHeroImage from '@/assets/bus-hero.jpg';
 
@@ -14,6 +14,7 @@ const Index = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const navigate = useNavigate();
+  const { busLines, isLoading, error, refetch } = useBusData();
 
   // Filtrar linhas baseado na pesquisa e categoria
   const filteredLines = busLines.filter(line => {
@@ -36,6 +37,35 @@ const Index = () => {
   const handleLineClick = (lineId: string) => {
     navigate(`/linha/${lineId}`);
   };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <Card className="p-8 text-center">
+          <Loader2 className="w-8 h-8 animate-spin mx-auto mb-4 text-primary" />
+          <h2 className="text-xl font-semibold mb-2">Carregando dados dos ônibus...</h2>
+          <p className="text-muted-foreground">Conectando com a base de dados em tempo real</p>
+        </Card>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <Card className="p-8 text-center max-w-md">
+          <h2 className="text-xl font-semibold mb-2 text-destructive">Erro ao carregar dados</h2>
+          <p className="text-muted-foreground mb-4">{error}</p>
+          <button 
+            onClick={refetch}
+            className="px-4 py-2 bg-primary text-white rounded hover:bg-primary/90"
+          >
+            Tentar novamente
+          </button>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background">
