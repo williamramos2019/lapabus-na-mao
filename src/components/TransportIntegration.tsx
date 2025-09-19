@@ -1,16 +1,39 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { MapPin, Bus, Clock, Navigation } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { busLines } from '@/data/busLines';
 import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
 
 export const TransportIntegration = () => {
   const [userLocation, setUserLocation] = useState<{ lat: number; lng: number } | null>(null);
   const [isLoadingLocation, setIsLoadingLocation] = useState(false);
   const [nearbyStops, setNearbyStops] = useState<any[]>([]);
+  const [realTimeBuses, setRealTimeBuses] = useState<any[]>([]);
+  const [supabaseBusLines, setSupabaseBusLines] = useState<any[]>([]);
+  const [isLoadingRealTime, setIsLoadingRealTime] = useState(false);
   const { toast } = useToast();
+
+  // Load bus lines from Supabase on component mount
+  useEffect(() => {
+    loadBusLinesFromSupabase();
+  }, []);
+
+  const loadBusLinesFromSupabase = async () => {
+    try {
+      const { data: lines, error } = await supabase
+        .from('bus_lines')
+        .select('*')
+        .eq('status', 'active');
+      
+      if (error) throw error;
+      setSupabaseBusLines(lines || []);
+    } catch (error) {
+      console.error('Erro ao carregar linhas do Supabase:', error);
+    }
+  };
 
   const getUserLocation = async () => {
     setIsLoadingLocation(true);
@@ -52,18 +75,49 @@ export const TransportIntegration = () => {
     }
   };
 
-  const findNearbyStops = (location: { lat: number; lng: number }) => {
-    // Simular paradas próximas baseadas nas linhas existentes
-    const mockNearbyStops = busLines.slice(0, 3).map((line, index) => ({
-      id: `stop-${index + 1}`,
-      name: line.stops[0]?.name || 'Parada',
-      address: line.stops[0]?.address || 'Endereço não disponível',
-      distance: Math.floor(Math.random() * 500) + 100, // Distância simulada em metros
-      lines: [line.number],
-      nextBus: line.weekdaySchedule[0] || 'Não disponível'
-    }));
+  const findNearbyStops = async (location: { lat: number; lng: number }) => {
+    setIsLoadingRealTime(true);
+    try {
+      // Use real data from Supabase if available, otherwise fallback to local data
+      const linesToUse = supabaseBusLines.length > 0 ? supabaseBusLines : busLines;
+      
+      // Call edge function to get real transport data
+      const { data: realTimeData, error } = await supabase.functions.invoke('get-transport-data', {
+        body: { 
+          latitude: location.lat, 
+          longitude: location.lng,
+          radius: 1000 // 1km radius
+        }
+      });
 
-    setNearbyStops(mockNearbyStops);
+      if (error) {
+        console.error('Erro ao buscar dados em tempo real:', error);
+        // Fallback to simulated data
+        const mockNearbyStops = linesToUse.slice(0, 3).map((line, index) => ({
+          id: `stop-${index + 1}`,
+          name: line.line_name || line.stops?.[0]?.name || 'Parada',
+          address: line.destination || line.stops?.[0]?.address || 'Endereço não disponível',
+          distance: Math.floor(Math.random() * 500) + 100,
+          lines: [line.line_number || line.number],
+          nextBus: 'Dados simulados',
+          isRealTime: false
+        }));
+        setNearbyStops(mockNearbyStops);
+      } else {
+        setNearbyStops(realTimeData?.nearbyStops || []);
+        setRealTimeBuses(realTimeData?.buses || []);
+      }
+
+    } catch (error) {
+      console.error('Erro ao buscar paradas próximas:', error);
+      toast({
+        title: "Aviso",
+        description: "Usando dados simulados. APIs de transporte público em desenvolvimento.",
+        variant: "default",
+      });
+    } finally {
+      setIsLoadingRealTime(false);
+    }
   };
 
   return (
@@ -168,28 +222,37 @@ export const TransportIntegration = () => {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <Card className="p-4 text-center">
               <Bus className="w-8 h-8 mx-auto mb-2 text-primary" />
-              <div className="text-2xl font-bold text-primary">{busLines.length}</div>
-              <div className="text-sm text-muted-foreground">Linhas Ativas</div>
+              <div className="text-2xl font-bold text-primary">
+                {supabaseBusLines.length > 0 ? supabaseBusLines.length : busLines.length}
+              </div>
+              <div className="text-sm text-muted-foreground">
+                Linhas {supabaseBusLines.length > 0 ? 'Reais' : 'Locais'}
+              </div>
             </Card>
             
             <Card className="p-4 text-center">
               <MapPin className="w-8 h-8 mx-auto mb-2 text-primary" />
               <div className="text-2xl font-bold text-primary">
-                {busLines.reduce((total, line) => total + line.stops.length, 0)}
+                {nearbyStops.length > 0 ? nearbyStops.length : 
+                 busLines.reduce((total, line) => total + line.stops.length, 0)}
               </div>
-              <div className="text-sm text-muted-foreground">Paradas</div>
+              <div className="text-sm text-muted-foreground">Paradas Próximas</div>
             </Card>
             
             <Card className="p-4 text-center">
               <Clock className="w-8 h-8 mx-auto mb-2 text-primary" />
-              <div className="text-2xl font-bold text-primary">05:00</div>
-              <div className="text-sm text-muted-foreground">Primeira Viagem</div>
+              <div className="text-2xl font-bold text-primary">
+                {realTimeBuses.length > 0 ? realTimeBuses.length : '0'}
+              </div>
+              <div className="text-sm text-muted-foreground">Ônibus em Tempo Real</div>
             </Card>
             
             <Card className="p-4 text-center">
               <Clock className="w-8 h-8 mx-auto mb-2 text-primary" />
-              <div className="text-2xl font-bold text-primary">23:40</div>
-              <div className="text-sm text-muted-foreground">Última Viagem</div>
+              <div className="text-2xl font-bold text-primary">
+                {isLoadingRealTime ? '...' : (userLocation ? 'Ativo' : 'Inativo')}
+              </div>
+              <div className="text-sm text-muted-foreground">Status GPS</div>
             </Card>
           </div>
         </div>
