@@ -14,6 +14,56 @@ export type Database = {
   }
   public: {
     Tables: {
+      bus_alerts: {
+        Row: {
+          alert_type: string
+          created_at: string
+          ends_at: string | null
+          id: string
+          is_active: boolean | null
+          line_id: string | null
+          message: string
+          severity: string | null
+          starts_at: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          alert_type: string
+          created_at?: string
+          ends_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          line_id?: string | null
+          message: string
+          severity?: string | null
+          starts_at?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          alert_type?: string
+          created_at?: string
+          ends_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          line_id?: string | null
+          message?: string
+          severity?: string | null
+          starts_at?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bus_alerts_line_id_fkey"
+            columns: ["line_id"]
+            isOneToOne: false
+            referencedRelation: "bus_lines"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       bus_lines: {
         Row: {
           company: string | null
@@ -53,6 +103,57 @@ export type Database = {
           scraped_url?: string | null
           status?: string | null
           updated_at?: string
+        }
+        Relationships: []
+      }
+      bus_positions: {
+        Row: {
+          created_at: string
+          delay_minutes: number | null
+          estimated_arrival_time: string | null
+          heading: number | null
+          id: string
+          last_updated: string
+          latitude: number
+          line_id: string
+          longitude: number
+          next_stop_id: string | null
+          occupancy_level: string | null
+          speed_kmh: number | null
+          status: string | null
+          vehicle_id: string
+        }
+        Insert: {
+          created_at?: string
+          delay_minutes?: number | null
+          estimated_arrival_time?: string | null
+          heading?: number | null
+          id?: string
+          last_updated?: string
+          latitude: number
+          line_id: string
+          longitude: number
+          next_stop_id?: string | null
+          occupancy_level?: string | null
+          speed_kmh?: number | null
+          status?: string | null
+          vehicle_id: string
+        }
+        Update: {
+          created_at?: string
+          delay_minutes?: number | null
+          estimated_arrival_time?: string | null
+          heading?: number | null
+          id?: string
+          last_updated?: string
+          latitude?: number
+          line_id?: string
+          longitude?: number
+          next_stop_id?: string | null
+          occupancy_level?: string | null
+          speed_kmh?: number | null
+          status?: string | null
+          vehicle_id?: string
         }
         Relationships: []
       }
@@ -138,6 +239,50 @@ export type Database = {
           url?: string
         }
         Relationships: []
+      }
+      user_notifications: {
+        Row: {
+          advance_minutes: number | null
+          created_at: string
+          id: string
+          is_active: boolean | null
+          line_id: string | null
+          notification_type: string
+          stop_name: string | null
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          advance_minutes?: number | null
+          created_at?: string
+          id?: string
+          is_active?: boolean | null
+          line_id?: string | null
+          notification_type: string
+          stop_name?: string | null
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          advance_minutes?: number | null
+          created_at?: string
+          id?: string
+          is_active?: boolean | null
+          line_id?: string | null
+          notification_type?: string
+          stop_name?: string | null
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_notifications_line_id_fkey"
+            columns: ["line_id"]
+            isOneToOne: false
+            referencedRelation: "bus_lines"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {

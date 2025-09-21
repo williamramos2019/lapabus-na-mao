@@ -1,11 +1,13 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Bus, Search, MapPin, Clock, Zap, Loader2 } from 'lucide-react';
+import { Bus, Search, MapPin, Clock, Zap, Loader2, Navigation } from 'lucide-react';
 import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { BusLineCard } from '@/components/BusLineCard';
 import { CategoryFilter } from '@/components/CategoryFilter';
 import { TransportIntegration } from '@/components/TransportIntegration';
+import { NotificationCenter } from '@/components/NotificationCenter';
 import { useBusData } from '@/hooks/useBusData';
 import { busCategories } from '@/types/categories';
 import busHeroImage from '@/assets/bus-hero.jpg';
@@ -140,9 +142,29 @@ const Index = () => {
           </Card>
         </div>
 
-        {/* Transport Integration */}
+        {/* Quick Actions */}
         <div className="mb-8">
-          <TransportIntegration />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <Card className="cursor-pointer hover:shadow-lg transition-shadow" 
+                  onClick={() => navigate('/rastreamento')}>
+              <CardContent className="p-6 text-center">
+                <Navigation className="w-12 h-12 mx-auto mb-4 text-primary" />
+                <h3 className="text-xl font-semibold mb-2">Rastreamento em Tempo Real</h3>
+                <p className="text-muted-foreground">
+                  Veja a localização dos ônibus em tempo real no mapa
+                </p>
+                <Button className="mt-4 w-full">
+                  Abrir Rastreamento
+                </Button>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardContent className="p-6">
+                <NotificationCenter />
+              </CardContent>
+            </Card>
+          </div>
         </div>
 
         {/* Filtros e Linhas */}
