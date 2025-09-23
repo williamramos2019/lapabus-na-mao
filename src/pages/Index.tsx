@@ -8,6 +8,8 @@ import { BusLineCard } from '@/components/BusLineCard';
 import { CategoryFilter } from '@/components/CategoryFilter';
 import { TransportIntegration } from '@/components/TransportIntegration';
 import { NotificationCenter } from '@/components/NotificationCenter';
+import { PWAInstallPrompt } from '@/components/PWAInstallPrompt';
+import { OfflineIndicator } from '@/components/OfflineIndicator';
 import { useBusData } from '@/hooks/useBusData';
 import { busCategories } from '@/types/categories';
 import busHeroImage from '@/assets/bus-hero.jpg';
@@ -71,6 +73,8 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <OfflineIndicator />
+      <PWAInstallPrompt />
       {/* Hero Section */}
       <div className="relative overflow-hidden">
         <div 
