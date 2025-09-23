@@ -1,0 +1,32 @@
+{
+  "name": "Lapa Bus na Mão",
+  "short_name": "LapaBus",
+  "description": "Guia completo de ônibus de São José da Lapa - MG",
+  "start_url": "/",
+  "display": "standalone",
+  "theme_color": "#2563eb",
+  "background_color": "#ffffff",
+  "orientation": "portrait",
+  "categories": ["travel", "navigation", "productivity"],
+  "lang": "pt-BR",
+  "icons": [
+    {
+      "src": "https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?w=192&h=192&fit=crop&crop=center",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?w=512&h=512&fit=crop&crop=center",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?w=192&h=192&fit=crop&crop=center",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}
