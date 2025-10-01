@@ -7,6 +7,7 @@ import Index from "./pages/Index";
 import BusLineDetail from "./pages/BusLineDetail";
 import RealTimeTracking from "./pages/RealTimeTracking";
 import Admin from "./pages/Admin";
+import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -21,6 +22,7 @@ const App = () => (
           <Route path="/" element={<Index />} />
           <Route path="/linha/:id" element={<BusLineDetail />} />
           <Route path="/rastreamento" element={<RealTimeTracking />} />
+          <Route path="/auth" element={<Auth />} />
           <Route path="/admin" element={<Admin />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />

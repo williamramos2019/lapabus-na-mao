@@ -1,15 +1,42 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Loader2, Upload, Database, FileJson } from 'lucide-react';
+import { Loader2, Upload, Database, FileJson, LogOut } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/hooks/useAuth';
 import busDataJson from '@/data/complete-bus-data-new.json';
 
 export default function Admin() {
+  const navigate = useNavigate();
+  const { user, loading, isAdmin, signOut } = useAuth();
   const [isUploading, setIsUploading] = useState(false);
   const [isImporting, setIsImporting] = useState(false);
   const { toast } = useToast();
+
+  useEffect(() => {
+    if (!loading && !user) {
+      navigate('/auth');
+    }
+  }, [user, loading, navigate]);
+
+  const handleLogout = async () => {
+    await signOut();
+    navigate('/');
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  if (!user) {
+    return null;
+  }
 
   const handleUploadJson = async () => {
     try {
@@ -73,7 +100,20 @@ export default function Admin() {
   return (
     <div className="min-h-screen bg-background p-8">
       <div className="container mx-auto max-w-4xl">
-        <h1 className="text-4xl font-bold mb-8">Administração do Sistema</h1>
+        <div className="flex justify-between items-center mb-8">
+          <div>
+            <h1 className="text-4xl font-bold">Administração do Sistema</h1>
+            {user && (
+              <p className="text-muted-foreground mt-2">
+                Logado como: {user.email}
+              </p>
+            )}
+          </div>
+          <Button variant="outline" onClick={handleLogout}>
+            <LogOut className="w-4 h-4 mr-2" />
+            Sair
+          </Button>
+        </div>
 
         <div className="grid gap-6">
           {/* Upload JSON Section */}

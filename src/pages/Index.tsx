@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Bus, Search, MapPin, Clock, Zap, Loader2, Navigation } from 'lucide-react';
+import { Bus, Search, MapPin, Clock, Zap, Loader2, Navigation, LogIn, LogOut, Shield } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -11,6 +11,7 @@ import { NotificationCenter } from '@/components/NotificationCenter';
 import { PWAInstallPrompt } from '@/components/PWAInstallPrompt';
 import { OfflineIndicator } from '@/components/OfflineIndicator';
 import { useBusData } from '@/hooks/useBusData';
+import { useAuth } from '@/hooks/useAuth';
 import { busCategories } from '@/types/categories';
 import busHeroImage from '@/assets/bus-hero.jpg';
 
@@ -19,6 +20,15 @@ const Index = () => {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const navigate = useNavigate();
   const { busLines, isLoading, error, refetch } = useBusData();
+  const { user, isAdmin, signOut } = useAuth();
+
+  const handleAuthAction = async () => {
+    if (user) {
+      await signOut();
+    } else {
+      navigate('/auth');
+    }
+  };
 
   // Filtrar linhas baseado na pesquisa e categoria
   const filteredLines = busLines.filter(line => {
@@ -85,13 +95,46 @@ const Index = () => {
             backgroundPosition: 'center'
           }}
         >
-          <div className="text-center text-white z-10">
-            <div className="flex items-center justify-center gap-3 mb-4">
-              <Bus className="w-12 h-12" />
-              <h1 className="text-4xl md:text-5xl font-bold">Guia de Ônibus</h1>
+          <div className="text-center text-white z-10 w-full px-4">
+            <div className="flex flex-col items-center">
+              <div className="flex items-center justify-center gap-3 mb-4">
+                <Bus className="w-12 h-12" />
+                <h1 className="text-4xl md:text-5xl font-bold">Guia de Ônibus</h1>
+              </div>
+              <p className="text-xl md:text-2xl mb-2 text-white/90">São José da Lapa - MG</p>
+              <p className="text-white/80 mb-6">Consulte horários e rotas em tempo real</p>
+              
+              <div className="flex gap-2">
+                <Button 
+                  variant="secondary" 
+                  onClick={handleAuthAction}
+                  className="bg-white/20 hover:bg-white/30 text-white border-white/40"
+                >
+                  {user ? (
+                    <>
+                      <LogOut className="w-4 h-4 mr-2" />
+                      Sair
+                    </>
+                  ) : (
+                    <>
+                      <LogIn className="w-4 h-4 mr-2" />
+                      Entrar
+                    </>
+                  )}
+                </Button>
+                
+                {isAdmin && (
+                  <Button 
+                    variant="secondary"
+                    onClick={() => navigate('/admin')}
+                    className="bg-white/20 hover:bg-white/30 text-white border-white/40"
+                  >
+                    <Shield className="w-4 h-4 mr-2" />
+                    Admin
+                  </Button>
+                )}
+              </div>
             </div>
-            <p className="text-xl md:text-2xl mb-2 text-white/90">São José da Lapa - MG</p>
-            <p className="text-white/80">Consulte horários e rotas em tempo real</p>
           </div>
         </div>
       </div>
